@@ -9,10 +9,10 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="1369.0" style="-fx-background-color: orange;" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="1369.0" style="-fx-background-color: orange;" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
-      <TextArea layoutX="31.0" layoutY="68.0" prefHeight="611.0" prefWidth="358.0" />
-      <TableView layoutX="683.0" layoutY="51.0" prefHeight="295.0" prefWidth="659.0">
+      <TextArea fx:id="instructionsArea" layoutX="31.0" layoutY="68.0" prefHeight="611.0" prefWidth="358.0" />
+      <TableView fx:id="opcodeTable" layoutX="683.0" layoutY="51.0" prefHeight="295.0" prefWidth="659.0">
          <columns>
             <TableColumn prefWidth="157.333251953125" text="Instruction" />
           <TableColumn prefWidth="69.33343505859375" text="B: 31-26" />
@@ -31,7 +31,7 @@
       </Text>
       <ScrollPane layoutX="412.0" layoutY="55.0" prefHeight="296.0" prefWidth="254.0">
          <content>
-            <TableView prefHeight="412.0" prefWidth="235.0">
+            <TableView fx:id="registerTable" prefHeight="412.0" prefWidth="235.0">
                <columns>
                   <TableColumn prefWidth="77.5999755859375" text="Register" />
                   <TableColumn prefWidth="161.0665283203125" text="Value" />
@@ -41,7 +41,7 @@
       </ScrollPane>
       <ScrollPane layoutX="414.0" layoutY="395.0" prefHeight="330.0" prefWidth="254.0">
          <content>
-            <TableView prefHeight="424.0" prefWidth="238.0">
+            <TableView fx:id="dataTable" prefHeight="424.0" prefWidth="238.0">
                <columns>
                   <TableColumn prefWidth="101.06658935546875" text="Address" />
                   <TableColumn prefWidth="135.9999755859375" text="Representation" />
@@ -64,10 +64,10 @@
             <Font size="20.0" />
          </font>
       </Text>
-      <Button layoutX="558.0" layoutY="361.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="109.0" text="GOTO Memory" />
-      <Button layoutX="62.0" layoutY="704.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="82.0" text="Load" />
-      <Button layoutX="177.0" layoutY="704.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="82.0" text="Reset" />
-      <Button layoutX="1234.0" layoutY="359.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="109.0" text="Next Cycle" />
+      <Button fx:id="GotoBtn" layoutX="558.0" layoutY="361.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="109.0" text="GOTO Memory" />
+      <Button fx:id="LoadBtn" layoutX="62.0" layoutY="704.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="82.0" text="Load" />
+      <Button fx:id="NextBtn" layoutX="177.0" layoutY="704.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="82.0" text="Reset" />
+      <Button fx:id="CycleNextBtn" layoutX="1234.0" layoutY="359.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="109.0" text="Next Cycle" />
       <Text layoutX="684.0" layoutY="383.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Cycles:">
          <font>
             <Font size="20.0" />
@@ -75,7 +75,7 @@
       </Text>
       <ScrollPane layoutX="683.0" layoutY="397.0" prefHeight="326.0" prefWidth="659.0">
          <content>
-            <TableView prefHeight="314.0" prefWidth="995.0">
+            <TableView fx:id="cyclesTable" prefHeight="314.0" prefWidth="995.0">
               <columns>
                 <TableColumn prefWidth="75.0" text="Cycle" />
                 <TableColumn prefWidth="94.39990234375" text="C2" />
