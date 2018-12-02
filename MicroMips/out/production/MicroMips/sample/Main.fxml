@@ -14,14 +14,14 @@
       <TextArea fx:id="instructionsArea" layoutX="31.0" layoutY="68.0" prefHeight="611.0" prefWidth="358.0" />
       <TableView fx:id="opcodeTable" layoutX="683.0" layoutY="51.0" prefHeight="295.0" prefWidth="659.0">
          <columns>
-            <TableColumn prefWidth="157.333251953125" text="Instruction" />
-          <TableColumn prefWidth="69.33343505859375" text="B: 31-26" />
-            <TableColumn prefWidth="59.4666748046875" text="B: 25-21" />
-            <TableColumn prefWidth="64.0" text="B: 20-16" />
-            <TableColumn prefWidth="56.8001708984375" text="B: 15-11" />
-            <TableColumn prefWidth="59.9998779296875" text="B: 10-6" />
-            <TableColumn prefWidth="63.7333984375" text="B: 5-0" />
-            <TableColumn prefWidth="131.199951171875" text="Hex" />
+            <TableColumn fx:id="tableInstruction" prefWidth="157.333251953125" text="Instruction" />
+          <TableColumn fx:id="table31" prefWidth="69.33343505859375" text="B: 31-26" />
+            <TableColumn fx:id="table25" prefWidth="59.4666748046875" text="B: 25-21" />
+            <TableColumn fx:id="table20" prefWidth="64.0" text="B: 20-16" />
+            <TableColumn fx:id="table15" prefWidth="56.8001708984375" text="B: 15-11" />
+            <TableColumn fx:id="table10" prefWidth="59.9998779296875" text="B: 10-6" />
+            <TableColumn fx:id="table5" prefWidth="63.7333984375" text="B: 5-0" />
+            <TableColumn fx:id="tableHex" prefWidth="131.199951171875" text="Hex" />
          </columns>
       </TableView>
       <Text layoutX="26.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter Code Here:">
@@ -64,10 +64,10 @@
             <Font size="20.0" />
          </font>
       </Text>
-      <Button fx:id="GotoBtn" layoutX="558.0" layoutY="361.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="109.0" text="GOTO Memory" />
-      <Button fx:id="LoadBtn" layoutX="62.0" layoutY="704.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="82.0" text="Load" />
-      <Button fx:id="NextBtn" layoutX="177.0" layoutY="704.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="82.0" text="Reset" />
-      <Button fx:id="CycleNextBtn" layoutX="1234.0" layoutY="359.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="109.0" text="Next Cycle" />
+      <Button fx:id="GotoBtn" layoutX="558.0" layoutY="361.0" mnemonicParsing="false" onAction="#btnGoto" prefHeight="26.0" prefWidth="109.0" text="GOTO Memory" />
+      <Button fx:id="LoadBtn" layoutX="62.0" layoutY="704.0" mnemonicParsing="false" onAction="#btnLoad" prefHeight="26.0" prefWidth="82.0" text="Load" />
+      <Button fx:id="NextBtn" layoutX="177.0" layoutY="704.0" mnemonicParsing="false" onAction="#btnReset" prefHeight="26.0" prefWidth="82.0" text="Reset" />
+      <Button fx:id="CycleNextBtn" layoutX="1234.0" layoutY="359.0" mnemonicParsing="false" onAction="#btnNextCycle" prefHeight="26.0" prefWidth="109.0" text="Next Cycle" />
       <Text layoutX="684.0" layoutY="383.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Cycles:">
          <font>
             <Font size="20.0" />
