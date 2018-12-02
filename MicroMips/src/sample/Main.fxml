@@ -33,8 +33,8 @@
          <content>
             <TableView fx:id="registerTable" prefHeight="412.0" prefWidth="235.0">
                <columns>
-                  <TableColumn prefWidth="77.5999755859375" text="Register" />
-                  <TableColumn prefWidth="161.0665283203125" text="Value" />
+                  <TableColumn fx:id="tblregister" prefWidth="77.5999755859375" text="Register" />
+                  <TableColumn fx:id="tblvalue" prefWidth="161.0665283203125" text="Value" />
                </columns>
             </TableView>
          </content>
