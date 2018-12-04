@@ -72,6 +72,8 @@ public class Controller implements Initializable {
     @FXML
     private TableView<?> cyclesTable;
 
+    private String[] arrSInstructions;
+
     public ObservableList<Object> registers = FXCollections.observableArrayList(
             new Register("R0","0000000000000000"),
             new Register("R1","0000000000000000"),
@@ -87,31 +89,26 @@ public class Controller implements Initializable {
             new Register("R11","0000000000000000"),
             new Register("R12","0000000000000000"),
             new Register("R13","0000000000000000"),
-            new Register("R14","0000000000000000")
+            new Register("R15","0000000000000000"),
+            new Register("R16","0000000000000000"),
+            new Register("R17","0000000000000000"),
+            new Register("R18","0000000000000000"),
+            new Register("R19","0000000000000000"),
+            new Register("R20","0000000000000000"),
+            new Register("R21","0000000000000000"),
+            new Register("R22","0000000000000000"),
+            new Register("R23","0000000000000000"),
+            new Register("R24","0000000000000000"),
+            new Register("R25","0000000000000000"),
+            new Register("R26","0000000000000000"),
+            new Register("R27","0000000000000000"),
+            new Register("R28","0000000000000000"),
+            new Register("R29","0000000000000000"),
+            new Register("R30","0000000000000000"),
+            new Register("R31","0000000000000000")
     );
 
-    public ObservableList<Object> sampleOpCode = FXCollections.observableArrayList(
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH"),
-            new Opcode("DADDIU R1, R0, #0003","000000","00000","00000","00000","00000","00000","ABCDEFGH")
-    );
+    public ObservableList<Object> sampleOpCode = FXCollections.observableArrayList();
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //load register
@@ -139,17 +136,42 @@ public class Controller implements Initializable {
 
     //load button setonclick
     public void btnLoad(){
-
+        getInstructions();
+        for (int i = 0; i < arrSInstructions.length; i++)
+            System.out.println(arrSInstructions[i]);
     }
 
+
+    //Should reset the contents of the table
     //reset button setonclick
     public void btnReset(){
+        //Add more reset function/method call here
+        resetRegisters();
 
+        //Refreshes the table so the old data wouldn't reappear when it is replaced
+        opcodeTable.refresh();
+        dataTable.refresh();
+        cyclesTable.refresh();
+        registerTable.refresh();
     }
 
+    //Adds a row in the opcode table depending on the instruction executed
     //next cycle button setonclick
     public void btnNextCycle(){
+    }
 
+
+    /*** PLACE ALL LOGICAL METHODS/FUNCTIONS HERE ***/
+
+    //Retrieves all instruction from the instructions input table
+    private void getInstructions(){
+        arrSInstructions = instructionsArea.getText().split("\n");
+    }
+
+    //Resets the value of each register back to its initial value
+    private void resetRegisters(){
+        for (int i = 0; i < registers.size(); i++)
+            ((Register)registers.get(i)).setValue("0000000000000000");
     }
 }
 
