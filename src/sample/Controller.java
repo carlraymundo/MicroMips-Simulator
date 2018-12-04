@@ -137,6 +137,11 @@ public class Controller implements Initializable {
     //load button setonclick
     public void btnLoad(){
         getInstructions();
+        //insert the function/method call for error checking here
+
+        //insert the function/method call for executing the code
+
+        //Ignore this for loop, delete this code before submission
         for (int i = 0; i < arrSInstructions.length; i++)
             System.out.println(arrSInstructions[i]);
     }
