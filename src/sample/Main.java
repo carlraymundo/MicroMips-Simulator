@@ -12,7 +12,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
         primaryStage.setTitle("MicroMips Simulator");
-        primaryStage.setScene(new Scene(root, 1369, 760));
+        primaryStage.setScene(new Scene(root, 1334, 722));
         primaryStage.show();
     }
 

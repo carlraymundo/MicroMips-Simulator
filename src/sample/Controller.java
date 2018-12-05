@@ -138,6 +138,7 @@ public class Controller implements Initializable {
         tblvalue.setCellValueFactory(new PropertyValueFactory<Register,String>("Value"));
         registerTable.setItems(registers);
 
+
         //load opcodes
         tableInstruction.setCellValueFactory(new PropertyValueFactory<Opcode,String>("instruction"));
         table31.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit31"));
@@ -148,6 +149,9 @@ public class Controller implements Initializable {
         table5.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit5"));
         tableHex.setCellValueFactory(new PropertyValueFactory<Opcode,String>("Hex"));
         opcodeTable.setItems(sampleOpCode);
+
+
+
 
     }
 
