@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
 
 /** Checklist of implemented instructions
  *  [/] LD - OpCode
- *  [ ] SD
+ *  [ ] SD - OpCode
  *  [ ] DADDIU
  *  [ ] DADDU
  *  [ ] DSUBU
@@ -226,11 +226,12 @@ public class Controller implements Initializable {
     private boolean isInstructionValid(String sInstruction, String line){
         String method = line.substring(sInstruction.length() + 1).trim();
         String[] csv = method.split(",");
-        if(sInstruction.equals("LD") && checkLD(sInstruction, csv)){
+        if(sInstruction.equals("LD") && checkLDSD(sInstruction, csv,"110111")){
             return true;
         }
-        else if(sInstruction.equals("SD"))
-            System.out.println("ld");
+        else if(sInstruction.equals("SD") && checkLDSD(sInstruction, csv, "111111")) {
+            return true;
+        }
         else if(sInstruction.equals("DADDIU"))
             System.out.println("DADDIU");
         else if(sInstruction.equals("DADDU"))
@@ -249,7 +250,7 @@ public class Controller implements Initializable {
     }
 
 
-    private boolean checkLD(String ins, String[] method){
+    private boolean checkLDSD(String ins, String[] method, String sOpCode){
         if (method.length == 2){
             String offset;
             String base;
@@ -259,9 +260,16 @@ public class Controller implements Initializable {
                 offset = method[1].toUpperCase().substring(0, 4);
                 base = method[1].substring(5, 7);
                 if(isValidHex(offset) && Arrays.asList(sRegisters).contains(base)){
-                    Type655_16 s =  new Type655_16("110111", extendBin(hexToBin(""+base.charAt(1)), 5), extendBin(hexToBin(""+method[0].charAt(1)), 5), extendBin(hexToBin(offset), 16));
+                    Type655_16 s =  new Type655_16(sOpCode, extendBin(hexToBin(""+base.charAt(1)), 5), extendBin(hexToBin(""+method[0].charAt(1)), 5), extendBin(hexToBin(offset), 16));
                     String[] splitOffset = splitOffset(s.getsVariable());
-                    sampleOpCode.add(new Opcode(ins + " " + method[0]+", "+ offset+"(" + base +")", s.getsOpCode(),s.getsRs().substring(1) + s.getsRt().substring(0, 1), s.getsRt().substring(1) + splitOffset[0],splitOffset[1],splitOffset[2],splitOffset[3], binToHex(s.getAll())));
+                    sampleOpCode.add(new Opcode(ins + " " + method[0]+", "+ offset+"(" + base +")",
+                            s.getsOpCode(),
+                            s.getsRs(),
+                            s.getsRt(),
+                            splitOffset[0],
+                            splitOffset[1],
+                            splitOffset[2],
+                            binToHex(s.getAll())));
                     return true;
                 }
             }
@@ -269,6 +277,8 @@ public class Controller implements Initializable {
 
         return false;
     }
+
+
 
     private String extendBin(String bin, int n){
         while (bin.length() < n)
@@ -355,10 +365,10 @@ public class Controller implements Initializable {
 
     private String[] splitOffset(String offset){
         String[] strings = new String[4];
-        strings[0] = offset.substring(0, 1);
-        strings[1] = offset.substring(1, 6);
-        strings[2] = offset.substring(6, 11);
-        strings[3] = offset.substring(11, 16);
+//        strings[0] = offset.substring(0, 1);
+        strings[0] = offset.substring(0, 5);
+        strings[1] = offset.substring(5, 10);
+        strings[2] = offset.substring(10, 16);
         return strings;
     }
 }
