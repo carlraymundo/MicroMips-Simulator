@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="722.0" prefWidth="1334.0" style="-fx-background-color: orange;" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="682.0" prefWidth="1315.0" style="-fx-background-color: orange;" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <TextArea fx:id="instructionsArea" layoutX="31.0" layoutY="68.0" prefHeight="554.0" prefWidth="358.0" />
       <TableView fx:id="opcodeTable" layoutX="683.0" layoutY="51.0" prefHeight="279.0" prefWidth="608.0">
@@ -28,13 +28,13 @@
             <Font size="23.0" />
          </font>
       </Text>
-      <TableView fx:id="registerTable" layoutX="415.0" layoutY="55.0" prefHeight="289.0" prefWidth="235.0">
+      <TableView fx:id="registerTable" layoutX="415.0" layoutY="55.0" prefHeight="277.0" prefWidth="235.0">
          <columns>
             <TableColumn fx:id="tblregister" prefWidth="77.5999755859375" text="Register" />
             <TableColumn fx:id="tblvalue" prefWidth="161.0665283203125" text="Value" />
          </columns>
       </TableView>
-      <TableView fx:id="dataTable" layoutX="413.0" layoutY="393.0" prefHeight="315.0" prefWidth="238.0">
+      <TableView fx:id="dataTable" layoutX="414.0" layoutY="390.0" prefHeight="257.0" prefWidth="238.0">
          <columns>
             <TableColumn prefWidth="101.06658935546875" text="Address" />
             <TableColumn prefWidth="135.9999755859375" text="Representation" />
@@ -45,7 +45,7 @@
             <Font size="20.0" />
          </font>
       </Text>
-      <Text layoutX="418.0" layoutY="377.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Data:">
+      <Text layoutX="418.0" layoutY="373.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Data:">
          <font>
             <Font size="20.0" />
          </font>
@@ -55,15 +55,15 @@
             <Font size="20.0" />
          </font>
       </Text>
-      <Button fx:id="GotoBtn" layoutX="557.0" layoutY="357.0" mnemonicParsing="false" onAction="#btnGoto" prefHeight="26.0" prefWidth="109.0" text="GOTO Memory" />
+      <Button fx:id="GotoBtn" layoutX="557.0" layoutY="351.0" mnemonicParsing="false" onAction="#btnGoto" prefHeight="26.0" prefWidth="109.0" text="GOTO Memory" />
       <Button fx:id="LoadBtn" layoutX="80.0" layoutY="638.0" mnemonicParsing="false" onAction="#btnLoad" prefHeight="26.0" prefWidth="82.0" text="Load" />
       <Button fx:id="NextBtn" layoutX="248.0" layoutY="639.0" mnemonicParsing="false" onAction="#btnReset" prefHeight="26.0" prefWidth="82.0" text="Reset" />
-      <Button fx:id="CycleNextBtn" layoutX="1177.0" layoutY="356.0" mnemonicParsing="false" onAction="#btnNextCycle" prefHeight="26.0" prefWidth="109.0" text="Next Cycle" />
-      <Text layoutX="688.0" layoutY="377.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Cycles:">
+      <Button fx:id="CycleNextBtn" layoutX="1174.0" layoutY="346.0" mnemonicParsing="false" onAction="#btnNextCycle" prefHeight="26.0" prefWidth="109.0" text="Next Cycle" />
+      <Text layoutX="688.0" layoutY="371.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Cycles:">
          <font>
             <Font size="20.0" />
          </font>
       </Text>
-      <TextArea layoutX="691.0" layoutY="404.0" prefHeight="283.0" prefWidth="601.0" />
+      <TextArea layoutX="689.0" layoutY="385.0" prefHeight="269.0" prefWidth="602.0" />
    </children>
 </AnchorPane>
