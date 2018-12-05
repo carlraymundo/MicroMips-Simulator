@@ -1,5 +1,7 @@
 package sample;
 
+import Model.Instruction;
+import Model.Type655_16;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -8,7 +10,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 
-import java.awt.image.renderable.RenderableImage;
+
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,8 +19,8 @@ import java.util.ResourceBundle;
 
 
 /** Checklist of implemented instructions
- *  [ ] LD
- *  [ ] SD
+ *  [/] LD - OpCode
+ *  [/] SD - OpCode
  *  [ ] DADDIU
  *  [ ] DADDU
  *  [ ] DSUBU
@@ -96,11 +99,15 @@ public class Controller implements Initializable {
             "DAUI"));
     private int pointer = 0;
     private String[] sRegisters = new String[32];
-
+    
 
 
     public ObservableList<Object> sampleOpCode = FXCollections.observableArrayList(
 
+        new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF"),
+        new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF"),
+        new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF"),
+        new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF"),
         new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF")
     );
 
@@ -162,6 +169,7 @@ public class Controller implements Initializable {
 
     //load button setonclick
     public void btnLoad(){
+        reset();
         getInstructions();
         //insert the function/method call for error checking here
         for (int i = 0; i < arrSInstructions.length; i++) {
@@ -175,11 +183,12 @@ public class Controller implements Initializable {
             }
         }
 
-        for (int i = 0; i < sRegisters.length; i++) {
-            System.out.println(sRegisters[i]);
-        }
+//        for (int i = 0; i < sRegisters.length; i++) {
+//            System.out.println(sRegisters[i]);
+//        }
 
         //insert the function/method call for executing the code
+
 //        for (int i = 0; i < arrInstructionList.size(); i++) {
 //            System.out.println(arrInstructionList.get(i));
 //        }
@@ -197,22 +206,23 @@ public class Controller implements Initializable {
     //Should reset the contents of the table
     //reset button setonclick
     public void btnReset(){
+        reset();
+    }
+
+    private void reset(){
         //Add more reset function/method call here
         pointer = 0;
         resetRegisters();
         resetOpcode();
         CycleNextBtn.setDisable(true);
         //Refreshes the table so the old data wouldn't reappear when it is replaced
-        opcodeTable.refresh();
         dataTable.refresh();
-        //cyclesTable.refresh();
         registerTable.refresh();
     }
 
     //Adds a row in the opcode table depending on the instruction executed
     //next cycle button setonclick
     public void btnNextCycle(){
-        sampleOpCode.add(new Opcode("123123", "12312", "1232131", "12312312", "12312", "1231231231", "1231231231", "12312312"));
     }
 
 
@@ -230,17 +240,18 @@ public class Controller implements Initializable {
     }
 
     private void resetOpcode(){
-        sampleOpCode.removeAll();
+        opcodeTable.getItems().clear();
     }
 
     private boolean isInstructionValid(String sInstruction, String line){
         String method = line.substring(sInstruction.length() + 1).trim();
         String[] csv = method.split(",");
-        if(sInstruction.equals("LD") && !checkLD(csv)){
-
+        if(sInstruction.equals("LD") && checkLDSD(sInstruction, csv,"110111")){
+            return true;
         }
-        else if(sInstruction.equals("SD"))
-            System.out.println("ld");
+        else if(sInstruction.equals("SD") && checkLDSD(sInstruction, csv, "111111")) {
+            return true;
+        }
         else if(sInstruction.equals("DADDIU"))
             System.out.println("DADDIU");
         else if(sInstruction.equals("DADDU"))
@@ -259,16 +270,50 @@ public class Controller implements Initializable {
     }
 
 
-    private boolean checkLD(String[] method){
+    private boolean checkLDSD(String ins, String[] method, String sOpCode){
         if (method.length == 2){
+            String offset;
+            String base;
             method[0] = method[0].trim();
             method[1] = method[1].trim();
-//            if(method[1].length() == 8 && method == 0)
+            if(method[1].length() == 8 && Arrays.asList(sRegisters).contains(method[0])){
+                offset = method[1].toUpperCase().substring(0, 4);
+                base = method[1].substring(5, 7);
+                if(isValidHex(offset) && Arrays.asList(sRegisters).contains(base)){
+                    Type655_16 s =  new Type655_16(sOpCode, extendBin(hexToBin(""+base.charAt(1)), 5), extendBin(hexToBin(""+method[0].charAt(1)), 5), extendBin(hexToBin(offset), 16));
+                    String[] splitOffset = splitOffset(s.getsVariable());
+                    sampleOpCode.add(new Opcode(ins + " " + method[0]+", "+ offset+"(" + base +")",
+                            s.getsOpCode(),
+                            s.getsRs(),
+                            s.getsRt(),
+                            splitOffset[0],
+                            splitOffset[1],
+                            splitOffset[2],
+                            binToHex(s.getAll())));
+                    return true;
+                }
+            }
         }
 
         return false;
     }
 
+
+
+    private String extendBin(String bin, int n){
+        while (bin.length() < n)
+            bin = "0" + bin;
+        return bin;
+    }
+
+    private boolean isValidHex(String hex){
+        hex = hex.toUpperCase();
+        for (int i = 0; i < hex.length(); i++) {
+            if(!(hex.charAt(i) >= '0' && hex.charAt(i) < '9' || hex.charAt(i) >= 'A' && hex.charAt(i) <= 'F'))
+                return false;
+        }
+        return true;
+    }
 
     private boolean isLineValid(String line){
         StringBuilder s = new StringBuilder();
@@ -293,6 +338,58 @@ public class Controller implements Initializable {
         System.out.println(s.toString());
         isInstructionValid(s.toString(), line);
         return true;
+    }
+
+    private String decToHex(int dec){
+        return Integer.toString(dec,16);
+    }
+
+    private String binToHex(String binary){
+        int digitNumber = 1;
+        int sum = 0;
+        StringBuilder s = new StringBuilder();
+        for(int i = 0; i < binary.length(); i++){
+            if(digitNumber == 1)
+                sum+=Integer.parseInt(binary.charAt(i) + "")*8;
+            else if(digitNumber == 2)
+                sum+=Integer.parseInt(binary.charAt(i) + "")*4;
+            else if(digitNumber == 3)
+                sum+=Integer.parseInt(binary.charAt(i) + "")*2;
+            else if(digitNumber == 4 || i < binary.length()+1){
+                sum+=Integer.parseInt(binary.charAt(i) + "")*1;
+                digitNumber = 0;
+                if(sum < 10)
+                    s.append(sum);
+                else if(sum == 10)
+                    s.append("A");
+                else if(sum == 11)
+                    s.append("B");
+                else if(sum == 12)
+                    s.append("C");
+                else if(sum == 13)
+                    s.append("D");
+                else if(sum == 14)
+                    s.append("E");
+                else if(sum == 15)
+                    s.append("F");
+                sum=0;
+            }
+            digitNumber++;
+        }
+        return s.toString();
+    }
+
+    private String hexToBin(String hex){
+        return new BigInteger(hex, 16).toString(2);
+    }
+
+    private String[] splitOffset(String offset){
+        String[] strings = new String[4];
+//        strings[0] = offset.substring(0, 1);
+        strings[0] = offset.substring(0, 5);
+        strings[1] = offset.substring(5, 10);
+        strings[2] = offset.substring(10, 16);
+        return strings;
     }
 }
 

@@ -31,4 +31,8 @@ public class Type655_16 extends Instruction{
     public String getsVariable() {
         return sVariable;
     }
+
+    public String getAll(){
+        return sOpCode + sRs + sRt + sVariable;
+    }
 }
