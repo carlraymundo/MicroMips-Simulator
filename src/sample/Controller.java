@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
 
 /** Checklist of implemented instructions
  *  [/] LD - OpCode
- *  [ ] SD - OpCode
+ *  [/] SD - OpCode
  *  [ ] DADDIU
  *  [ ] DADDU
  *  [ ] DSUBU
