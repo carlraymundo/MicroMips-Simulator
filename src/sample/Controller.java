@@ -94,39 +94,6 @@ public class Controller implements Initializable {
             "DAUI"));
     private int pointer = 0;
 
-    public ObservableList<Object> registers = FXCollections.observableArrayList(
-            new Register("R0","0000000000000000"),
-            new Register("R1","0000000000000000"),
-            new Register("R2","0000000000000000"),
-            new Register("R3","0000000000000000"),
-            new Register("R4","0000000000000000"),
-            new Register("R5","0000000000000000"),
-            new Register("R6","0000000000000000"),
-            new Register("R7","0000000000000000"),
-            new Register("R8","0000000000000000"),
-            new Register("R9","0000000000000000"),
-            new Register("R10","0000000000000000"),
-            new Register("R11","0000000000000000"),
-            new Register("R12","0000000000000000"),
-            new Register("R13","0000000000000000"),
-            new Register("R15","0000000000000000"),
-            new Register("R16","0000000000000000"),
-            new Register("R17","0000000000000000"),
-            new Register("R18","0000000000000000"),
-            new Register("R19","0000000000000000"),
-            new Register("R20","0000000000000000"),
-            new Register("R21","0000000000000000"),
-            new Register("R22","0000000000000000"),
-            new Register("R23","0000000000000000"),
-            new Register("R24","0000000000000000"),
-            new Register("R25","0000000000000000"),
-            new Register("R26","0000000000000000"),
-            new Register("R27","0000000000000000"),
-            new Register("R28","0000000000000000"),
-            new Register("R29","0000000000000000"),
-            new Register("R30","0000000000000000"),
-            new Register("R31","0000000000000000")
-    );
 
     public ObservableList<Object> sampleOpCode = FXCollections.observableArrayList(
 
@@ -136,6 +103,16 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //load register
+
+        ArrayList<Register> registerArraylist = new ArrayList<Register>();
+        for(int i = 0;i < 32; i++){
+            Register reg = new Register("R" + i + " ","0000 0000 0000 0000");
+            registerArraylist.add(reg);
+        }
+
+        ObservableList<Object> registers = FXCollections.observableArrayList(registerArraylist);
+
+
         tblregister.setCellValueFactory(new PropertyValueFactory<Register,String>("RegisterNum"));
         tblvalue.setCellValueFactory(new PropertyValueFactory<Register,String>("Value"));
         registerTable.setItems(registers);
@@ -216,8 +193,8 @@ public class Controller implements Initializable {
 
     //Resets the value of each register back to its initial value
     private void resetRegisters(){
-        for (int i = 0; i < registers.size(); i++)
-            ((Register)registers.get(i)).setValue("0000000000000000");
+//        for (int i = 0; i < registers.size(); i++)
+//            ((Register)registers.get(i)).setValue("0000000000000000");
     }
 
     private void resetOpcode(){
