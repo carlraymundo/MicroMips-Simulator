@@ -94,7 +94,7 @@ public class Controller implements Initializable {
             "DAUI"));
     private int pointer = 0;
     private String[] sRegisters = new String[32];
-
+    
 
     public ObservableList<Object> registers = FXCollections.observableArrayList(
             new Register("R0","0000000000000000"),
@@ -132,6 +132,10 @@ public class Controller implements Initializable {
 
     public ObservableList<Object> sampleOpCode = FXCollections.observableArrayList(
 
+        new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF"),
+        new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF"),
+        new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF"),
+        new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF"),
         new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF")
     );
 
@@ -180,11 +184,12 @@ public class Controller implements Initializable {
             }
         }
 
-        for (int i = 0; i < sRegisters.length; i++) {
-            System.out.println(sRegisters[i]);
-        }
+//        for (int i = 0; i < sRegisters.length; i++) {
+//            System.out.println(sRegisters[i]);
+//        }
 
         //insert the function/method call for executing the code
+
 //        for (int i = 0; i < arrInstructionList.size(); i++) {
 //            System.out.println(arrInstructionList.get(i));
 //        }
@@ -206,16 +211,13 @@ public class Controller implements Initializable {
         resetOpcode();
         CycleNextBtn.setDisable(true);
         //Refreshes the table so the old data wouldn't reappear when it is replaced
-        opcodeTable.refresh();
         dataTable.refresh();
-        cyclesTable.refresh();
         registerTable.refresh();
     }
 
     //Adds a row in the opcode table depending on the instruction executed
     //next cycle button setonclick
     public void btnNextCycle(){
-        sampleOpCode.add(new Opcode("123123", "12312", "1232131", "12312312", "12312", "1231231231", "1231231231", "12312312"));
     }
 
 
@@ -233,13 +235,14 @@ public class Controller implements Initializable {
     }
 
     private void resetOpcode(){
-        sampleOpCode.removeAll();
+        opcodeTable.getItems().clear();
     }
 
     private boolean isInstructionValid(String sInstruction, String line){
         String method = line.substring(sInstruction.length() + 1).trim();
         String[] csv = method.split(",");
-        if(sInstruction.equals("LD") && !checkLD(csv)){
+        if(sInstruction.equals("LD") && checkLD(csv)){
+
 
         }
         else if(sInstruction.equals("SD"))
@@ -266,12 +269,14 @@ public class Controller implements Initializable {
         if (method.length == 2){
             method[0] = method[0].trim();
             method[1] = method[1].trim();
-//            if(method[1].length() == 8 && method == 0)
+            if(method[1].length() == 8 && Arrays.asList(sRegisters).contains(method[0])){
+
+            }
+
         }
 
         return false;
     }
-
 
     private boolean isLineValid(String line){
         StringBuilder s = new StringBuilder();
@@ -296,6 +301,45 @@ public class Controller implements Initializable {
         System.out.println(s.toString());
         isInstructionValid(s.toString(), line);
         return true;
+    }
+
+    private String decToHex(int dec){
+        return Integer.toString(dec,16);
+    }
+
+    private String binToHex(String binary){
+        int digitNumber = 1;
+        int sum = 0;
+        StringBuilder s = new StringBuilder();
+        for(int i = 0; i < binary.length(); i++){
+            if(digitNumber == 1)
+                sum+=Integer.parseInt(binary.charAt(i) + "")*8;
+            else if(digitNumber == 2)
+                sum+=Integer.parseInt(binary.charAt(i) + "")*4;
+            else if(digitNumber == 3)
+                sum+=Integer.parseInt(binary.charAt(i) + "")*2;
+            else if(digitNumber == 4 || i < binary.length()+1){
+                sum+=Integer.parseInt(binary.charAt(i) + "")*1;
+                digitNumber = 0;
+                if(sum < 10)
+                    s.append(sum);
+                else if(sum == 10)
+                    s.append("A");
+                else if(sum == 11)
+                    s.append("B");
+                else if(sum == 12)
+                    s.append("C");
+                else if(sum == 13)
+                    s.append("D");
+                else if(sum == 14)
+                    s.append("E");
+                else if(sum == 15)
+                    s.append("F");
+                sum=0;
+            }
+            digitNumber++;
+        }
+        return s.toString();
     }
 }
 
