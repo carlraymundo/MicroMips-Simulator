@@ -8,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+
 
 import java.math.BigInteger;
 import java.net.URL;
@@ -84,7 +86,7 @@ public class Controller implements Initializable {
     private Button CycleNextBtn;
 
     @FXML
-    private TableView<?> cyclesTable;
+    private TextArea showCycle;
 
     private String[] arrSInstructions;
     private ArrayList<String> arrInstructionList = new ArrayList<>(Arrays.asList("LD",
@@ -108,7 +110,7 @@ public class Controller implements Initializable {
 
         ArrayList<Register> registerArraylist = new ArrayList<Register>();
         for(int i = 0;i < 32; i++){
-            Register reg = new Register("R" + i + " ","0000 0000 0000 0000");
+            Register reg = new Register("R" + i + " ","0000000000000000");
             registerArraylist.add(reg);
         }
 
@@ -118,6 +120,15 @@ public class Controller implements Initializable {
         tblregister.setCellValueFactory(new PropertyValueFactory<Register,String>("RegisterNum"));
         tblvalue.setCellValueFactory(new PropertyValueFactory<Register,String>("Value"));
         registerTable.setItems(registers);
+        registerTable.setEditable(true);
+        tblvalue.setCellFactory(TextFieldTableCell.<Register>forTableColumn());
+        tblvalue.setOnEditCommit(
+                (TableColumn.CellEditEvent<Register,String> t)->{
+                    ((Register) t.getTableView().getItems().get(
+                            t.getTablePosition().getRow())).setValue(t.getNewValue());
+                }
+        );
+
 
         //load opcodes
         tableInstruction.setCellValueFactory(new PropertyValueFactory<Opcode,String>("instruction"));
@@ -129,12 +140,19 @@ public class Controller implements Initializable {
         table5.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit5"));
         tableHex.setCellValueFactory(new PropertyValueFactory<Opcode,String>("Hex"));
         opcodeTable.setItems(sampleOpCode);
-        opcodeTable.setStyle("-fx-font-size: 9 arial");
+        opcodeTable.setStyle("-fx-font-size: 9 calibri");
 
         CycleNextBtn.setDisable(true);
         for (int i = 0; i < sRegisters.length; i++)
             sRegisters[i] = "R"+i;
 
+        String text = "";
+        for (int i=1;i<=5;i++) {
+            text = text + "    Field "+i+"\n";
+        }
+        showCycle.setText(text);
+
+        showCycle.appendText("HEllo");
     }
 
     //goto button setonclick
@@ -174,6 +192,8 @@ public class Controller implements Initializable {
 //        for (int i = 0; i < arrSInstructions.length; i++)
 //            System.out.println(arrSInstructions[i]);
         CycleNextBtn.setDisable(false);
+
+
     }
 
 
