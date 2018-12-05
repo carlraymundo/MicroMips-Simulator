@@ -1,7 +1,5 @@
 package Model;
 
-import sample.Opcode;
-
 public class Type655556 extends Instruction{
     private String sRs;
     private String sRt;

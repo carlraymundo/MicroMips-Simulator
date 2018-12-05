@@ -1,6 +1,5 @@
 package sample;
 
-import Model.Instruction;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,7 +10,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.ResourceBundle;
 
 
@@ -87,13 +85,13 @@ public class Controller implements Initializable {
 
     private String[] arrSInstructions;
     private ArrayList<String> arrInstructionList = new ArrayList<>(Arrays.asList("LD",
-                                                                                 "SD",
-                                                                                 "DADDIU",
-                                                                                 "DADDU",
-                                                                                 "DSUBU",
-                                                                                 "BC",
-                                                                                 "BLTC",
-                                                                                 "DAUI"));
+            "SD",
+            "DADDIU",
+            "DADDU",
+            "DSUBU",
+            "BC",
+            "BLTC",
+            "DAUI"));
     private int pointer = 0;
 
     public ObservableList<Object> registers = FXCollections.observableArrayList(
@@ -138,7 +136,6 @@ public class Controller implements Initializable {
         tblvalue.setCellValueFactory(new PropertyValueFactory<Register,String>("Value"));
         registerTable.setItems(registers);
 
-
         //load opcodes
         tableInstruction.setCellValueFactory(new PropertyValueFactory<Opcode,String>("instruction"));
         table31.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit31"));
@@ -149,9 +146,6 @@ public class Controller implements Initializable {
         table5.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit5"));
         tableHex.setCellValueFactory(new PropertyValueFactory<Opcode,String>("Hex"));
         opcodeTable.setItems(sampleOpCode);
-
-
-
 
     }
 
@@ -225,9 +219,10 @@ public class Controller implements Initializable {
     }
 
     private boolean isInstructionValid(String sInstruction, String line){
-        String method = line.substring(sInstruction.length() + 1);
-        if(sInstruction.equals("LD"))
-            System.out.println("sd");
+        String method = line.substring(sInstruction.length() + 1).trim();
+        if(sInstruction.equals("LD")){
+
+        }
         else if(sInstruction.equals("SD"))
             System.out.println("ld");
         else if(sInstruction.equals("DADDIU"))
@@ -247,6 +242,8 @@ public class Controller implements Initializable {
         return true;
     }
 
+
+//    private boolean checkL
 
 
     private boolean isLineValid(String line){
