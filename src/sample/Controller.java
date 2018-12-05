@@ -128,7 +128,11 @@ public class Controller implements Initializable {
             new Register("R31","0000000000000000")
     );
 
-    public ObservableList<Object> sampleOpCode = FXCollections.observableArrayList();
+    public ObservableList<Object> sampleOpCode = FXCollections.observableArrayList(
+
+        new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF")
+    );
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //load register
@@ -146,7 +150,9 @@ public class Controller implements Initializable {
         table5.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit5"));
         tableHex.setCellValueFactory(new PropertyValueFactory<Opcode,String>("Hex"));
         opcodeTable.setItems(sampleOpCode);
+        opcodeTable.setStyle("-fx-font-size: 9 arial");
 
+        CycleNextBtn.setDisable(true);
     }
 
     //goto button setonclick

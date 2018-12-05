@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="682.0" prefWidth="1315.0" style="-fx-background-color: orange;" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <children>
         <TextArea fx:id="instructionsArea" layoutX="31.0" layoutY="68.0" prefHeight="554.0" prefWidth="358.0" />
         <TableView fx:id="opcodeTable" layoutX="683.0" layoutY="51.0" prefHeight="279.0" prefWidth="608.0">
             <columns>
-                <TableColumn fx:id="tableInstruction" prefWidth="95.199951171875" text="Instruction" />
-                <TableColumn fx:id="table31" prefWidth="69.5999755859375" text="B: 31-26" />
-                <TableColumn fx:id="table25" prefWidth="68.800048828125" text="B: 25-21" />
-                <TableColumn fx:id="table20" prefWidth="62.4000244140625" text="B: 20-16" />
-                <TableColumn fx:id="table15" prefWidth="75.9998779296875" text="B: 15-11" />
-                <TableColumn fx:id="table10" prefWidth="59.199951171875" text="B: 10-6" />
-                <TableColumn fx:id="table5" prefWidth="66.400146484375" text="B: 5-0" />
-                <TableColumn fx:id="tableHex" prefWidth="111.9998779296875" text="Hex" />
+                <TableColumn fx:id="tableInstruction" prefWidth="131.2000732421875" text="Instruction" />
+                <TableColumn fx:id="table31" prefWidth="68.00006103515625" text="B: 31-26" />
+                <TableColumn fx:id="table25" prefWidth="69.60003662109375" text="B: 25-21" />
+                <TableColumn fx:id="table20" prefWidth="72.800048828125" text="B: 20-16" />
+                <TableColumn fx:id="table15" prefWidth="62.39990234375" text="B: 15-11" />
+                <TableColumn fx:id="table10" prefWidth="59.9998779296875" text="B: 10-6" />
+                <TableColumn fx:id="table5" prefWidth="59.2000732421875" text="B: 5-0" />
+                <TableColumn fx:id="tableHex" prefWidth="78.4000244140625" text="Hex" />
             </columns>
         </TableView>
         <Text layoutX="26.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter Code Here:">
