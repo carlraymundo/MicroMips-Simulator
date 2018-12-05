@@ -1,17 +1,30 @@
 package sample;
 
+import Model.Instruction;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
+
+
+/** Checklist of implemented instructions
+ *  [ ] LD
+ *  [ ] SD
+ *  [ ] DADDIU
+ *  [ ] DADDU
+ *  [ ] DSUBU
+ *  [ ] BC
+ *  [ ] BLTC
+ *  [ ] DAUI
+ */
 
 public class Controller implements Initializable {
 
@@ -73,6 +86,15 @@ public class Controller implements Initializable {
     private TableView<?> cyclesTable;
 
     private String[] arrSInstructions;
+    private ArrayList<String> arrInstructionList = new ArrayList<>(Arrays.asList("LD",
+                                                                                 "SD",
+                                                                                 "DADDIU",
+                                                                                 "DADDU",
+                                                                                 "DSUBU",
+                                                                                 "BC",
+                                                                                 "BLTC",
+                                                                                 "DAUI"));
+    private int pointer = 0;
 
     public ObservableList<Object> registers = FXCollections.observableArrayList(
             new Register("R0","0000000000000000"),
@@ -138,12 +160,25 @@ public class Controller implements Initializable {
     public void btnLoad(){
         getInstructions();
         //insert the function/method call for error checking here
-
+        for (int i = 0; i < arrSInstructions.length; i++) {
+            if(!isLineValid(arrSInstructions[i])) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Error at line " + (i + 1), ButtonType.OK);
+                alert.showAndWait();
+                if (alert.getResult() == ButtonType.OK) {
+                    alert.close();
+                }
+                break;
+            }
+        }
         //insert the function/method call for executing the code
+//        for (int i = 0; i < arrInstructionList.size(); i++) {
+//            System.out.println(arrInstructionList.get(i));
+//        }
+
 
         //Ignore this for loop, delete this code before submission
-        for (int i = 0; i < arrSInstructions.length; i++)
-            System.out.println(arrSInstructions[i]);
+//        for (int i = 0; i < arrSInstructions.length; i++)
+//            System.out.println(arrSInstructions[i]);
     }
 
 
@@ -151,8 +186,9 @@ public class Controller implements Initializable {
     //reset button setonclick
     public void btnReset(){
         //Add more reset function/method call here
+        pointer = 0;
         resetRegisters();
-
+        resetOpcode();
         //Refreshes the table so the old data wouldn't reappear when it is replaced
         opcodeTable.refresh();
         dataTable.refresh();
@@ -163,6 +199,7 @@ public class Controller implements Initializable {
     //Adds a row in the opcode table depending on the instruction executed
     //next cycle button setonclick
     public void btnNextCycle(){
+        sampleOpCode.add(new Opcode("123123", "12312", "1232131", "12312312", "12312", "1231231231", "1231231231", "12312312"));
     }
 
 
@@ -177,6 +214,60 @@ public class Controller implements Initializable {
     private void resetRegisters(){
         for (int i = 0; i < registers.size(); i++)
             ((Register)registers.get(i)).setValue("0000000000000000");
+    }
+
+    private void resetOpcode(){
+        sampleOpCode.removeAll();
+    }
+
+    private boolean isInstructionValid(String sInstruction, String line){
+        String method = line.substring(sInstruction.length() + 1);
+        if(sInstruction.equals("LD"))
+            System.out.println("sd");
+        else if(sInstruction.equals("SD"))
+            System.out.println("ld");
+        else if(sInstruction.equals("DADDIU"))
+            System.out.println("DADDIU");
+        else if(sInstruction.equals("DADDU"))
+            System.out.println("DADDU");
+        else if(sInstruction.equals("DSUBU"))
+            System.out.println("DSUBU");
+        else if(sInstruction.equals("BC"))
+            System.out.println("BC");
+        else if(sInstruction.equals("BLTC"))
+            System.out.println("BLTC");
+        else if(sInstruction.equals("DAUI"))
+            System.out.println("DAUI");
+        else return false;
+        System.out.println(method);
+        return true;
+    }
+
+
+
+    private boolean isLineValid(String line){
+        StringBuilder s = new StringBuilder();
+        line = line.trim();
+        for (int i = 0; i < line.length(); i++) {
+            s.append(line.charAt(i));
+
+            if(arrInstructionList.contains(s.toString())) {
+                try {
+                    if (line.charAt(i + 1) != ' ')
+                        return false;
+                    else break;
+                } catch (IndexOutOfBoundsException e) {
+                    return false;
+                }
+            }
+            else if(line.charAt(i) == ' ' || i + 1 >= line.length()){
+                System.out.println(s.toString());
+                return false;
+            }
+        }
+        System.out.println(s.toString());
+        isInstructionValid(s.toString(), line);
+        return true;
     }
 }
 

@@ -4,3 +4,6 @@
 *.xml
 *.xml
 *.iml
+*.kotlin_module
+*.class
+*.class
