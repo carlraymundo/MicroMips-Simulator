@@ -220,7 +220,8 @@ public class Controller implements Initializable {
 
     private boolean isInstructionValid(String sInstruction, String line){
         String method = line.substring(sInstruction.length() + 1).trim();
-        if(sInstruction.equals("LD")){
+        String[] csv = method.split(",");
+        if(sInstruction.equals("LD") && !checkLD(csv)){
 
         }
         else if(sInstruction.equals("SD"))
@@ -243,7 +244,13 @@ public class Controller implements Initializable {
     }
 
 
-//    private boolean checkL
+    private boolean checkLD(String[] method){
+        if (method.length == 2){
+
+        }
+
+        return false;
+    }
 
 
     private boolean isLineValid(String line){
