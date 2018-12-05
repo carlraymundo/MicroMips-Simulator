@@ -93,6 +93,8 @@ public class Controller implements Initializable {
             "BLTC",
             "DAUI"));
     private int pointer = 0;
+    private String[] sRegisters = new String[32];
+
 
 
     public ObservableList<Object> sampleOpCode = FXCollections.observableArrayList(
@@ -130,6 +132,9 @@ public class Controller implements Initializable {
         opcodeTable.setStyle("-fx-font-size: 9 arial");
 
         CycleNextBtn.setDisable(true);
+        for (int i = 0; i < sRegisters.length; i++)
+            sRegisters[i] = "R"+i;
+
     }
 
     //goto button setonclick
@@ -151,6 +156,11 @@ public class Controller implements Initializable {
                 break;
             }
         }
+
+        for (int i = 0; i < sRegisters.length; i++) {
+            System.out.println(sRegisters[i]);
+        }
+
         //insert the function/method call for executing the code
 //        for (int i = 0; i < arrInstructionList.size(); i++) {
 //            System.out.println(arrInstructionList.get(i));
@@ -160,6 +170,7 @@ public class Controller implements Initializable {
         //Ignore this for loop, delete this code before submission
 //        for (int i = 0; i < arrSInstructions.length; i++)
 //            System.out.println(arrSInstructions[i]);
+        CycleNextBtn.setDisable(false);
     }
 
 
@@ -170,6 +181,7 @@ public class Controller implements Initializable {
         pointer = 0;
         resetRegisters();
         resetOpcode();
+        CycleNextBtn.setDisable(true);
         //Refreshes the table so the old data wouldn't reappear when it is replaced
         opcodeTable.refresh();
         dataTable.refresh();
@@ -203,7 +215,8 @@ public class Controller implements Initializable {
 
     private boolean isInstructionValid(String sInstruction, String line){
         String method = line.substring(sInstruction.length() + 1).trim();
-        if(sInstruction.equals("LD")){
+        String[] csv = method.split(",");
+        if(sInstruction.equals("LD") && !checkLD(csv)){
 
         }
         else if(sInstruction.equals("SD"))
@@ -226,7 +239,15 @@ public class Controller implements Initializable {
     }
 
 
-//    private boolean checkL
+    private boolean checkLD(String[] method){
+        if (method.length == 2){
+            method[0] = method[0].trim();
+            method[1] = method[1].trim();
+//            if(method[1].length() == 8 && method == 0)
+        }
+
+        return false;
+    }
 
 
     private boolean isLineValid(String line){
