@@ -1,5 +1,7 @@
 package sample;
 
+import Model.Instruction;
+import Model.Type655_16;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -7,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +17,7 @@ import java.util.ResourceBundle;
 
 
 /** Checklist of implemented instructions
- *  [ ] LD
+ *  [/] LD - OpCode
  *  [ ] SD
  *  [ ] DADDIU
  *  [ ] DADDU
@@ -148,6 +151,7 @@ public class Controller implements Initializable {
 
     //load button setonclick
     public void btnLoad(){
+        reset();
         getInstructions();
         //insert the function/method call for error checking here
         for (int i = 0; i < arrSInstructions.length; i++) {
@@ -182,6 +186,10 @@ public class Controller implements Initializable {
     //Should reset the contents of the table
     //reset button setonclick
     public void btnReset(){
+        reset();
+    }
+
+    private void reset(){
         //Add more reset function/method call here
         pointer = 0;
         resetRegisters();
@@ -218,9 +226,8 @@ public class Controller implements Initializable {
     private boolean isInstructionValid(String sInstruction, String line){
         String method = line.substring(sInstruction.length() + 1).trim();
         String[] csv = method.split(",");
-        if(sInstruction.equals("LD") && checkLD(csv)){
-
-
+        if(sInstruction.equals("LD") && checkLD(sInstruction, csv)){
+            return true;
         }
         else if(sInstruction.equals("SD"))
             System.out.println("ld");
@@ -242,17 +249,40 @@ public class Controller implements Initializable {
     }
 
 
-    private boolean checkLD(String[] method){
+    private boolean checkLD(String ins, String[] method){
         if (method.length == 2){
+            String offset;
+            String base;
             method[0] = method[0].trim();
             method[1] = method[1].trim();
             if(method[1].length() == 8 && Arrays.asList(sRegisters).contains(method[0])){
-
+                offset = method[1].toUpperCase().substring(0, 4);
+                base = method[1].substring(5, 7);
+                if(isValidHex(offset) && Arrays.asList(sRegisters).contains(base)){
+                    Type655_16 s =  new Type655_16("110111", extendBin(hexToBin(""+base.charAt(1)), 5), extendBin(hexToBin(""+method[0].charAt(1)), 5), extendBin(hexToBin(offset), 16));
+                    String[] splitOffset = splitOffset(s.getsVariable());
+                    sampleOpCode.add(new Opcode(ins + " " + method[0]+", "+ offset+"(" + base +")", s.getsOpCode(),s.getsRs().substring(1) + s.getsRt().substring(0, 1), s.getsRt().substring(1) + splitOffset[0],splitOffset[1],splitOffset[2],splitOffset[3], binToHex(s.getAll())));
+                    return true;
+                }
             }
-
         }
 
         return false;
+    }
+
+    private String extendBin(String bin, int n){
+        while (bin.length() < n)
+            bin = "0" + bin;
+        return bin;
+    }
+
+    private boolean isValidHex(String hex){
+        hex = hex.toUpperCase();
+        for (int i = 0; i < hex.length(); i++) {
+            if(!(hex.charAt(i) >= '0' && hex.charAt(i) < '9' || hex.charAt(i) >= 'A' && hex.charAt(i) <= 'F'))
+                return false;
+        }
+        return true;
     }
 
     private boolean isLineValid(String line){
@@ -317,6 +347,19 @@ public class Controller implements Initializable {
             digitNumber++;
         }
         return s.toString();
+    }
+
+    private String hexToBin(String hex){
+        return new BigInteger(hex, 16).toString(2);
+    }
+
+    private String[] splitOffset(String offset){
+        String[] strings = new String[4];
+        strings[0] = offset.substring(0, 1);
+        strings[1] = offset.substring(1, 6);
+        strings[2] = offset.substring(6, 11);
+        strings[3] = offset.substring(11, 16);
+        return strings;
     }
 }
 
