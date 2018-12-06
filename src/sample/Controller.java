@@ -1,6 +1,7 @@
 package sample;
 
 import Model.Instruction;
+import Model.Type655556;
 import Model.Type655_16;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -131,6 +132,7 @@ public class Controller implements Initializable {
                     ((Register) t.getTableView().getItems().get(
                             t.getTablePosition().getRow())).setValue(t.getNewValue());
                     else registerTable.refresh();
+                    System.out.println(t.getNewValue());
                 }
         );
 
@@ -267,10 +269,12 @@ public class Controller implements Initializable {
         else if(sInstruction.equals("DADDIU") && checkDADI(sInstruction, csv, "011001", false)) {
             return true;
         }
-        else if(sInstruction.equals("DADDU"))
-            System.out.println("DADDU");
-        else if(sInstruction.equals("DSUBU"))
-            System.out.println("DSUBU");
+        else if(sInstruction.equals("DADDU") && checkDADU(sInstruction, csv, "000000", "00000", "101101")){
+            return true;
+        }
+        else if(sInstruction.equals("DSUBU") && checkDADU(sInstruction, csv, "000000", "00000", "101111")) {
+            return true;
+        }
         else if(sInstruction.equals("BC"))
             System.out.println("BC");
         else if(sInstruction.equals("BLTC"))
@@ -281,6 +285,30 @@ public class Controller implements Initializable {
         else return false;
         System.out.println(method);
         return true;
+    }
+
+    private boolean checkDADU(String ins, String[] method, String sOpCode, String sa, String func){
+        if(method.length == 3){
+            System.out.println("Accessed Dadu");
+
+            String rd = method[0].trim();
+            String rt = method[2].trim();
+            String rs = method[1].trim();
+            if(Arrays.asList(sRegisters).contains(rd) &&
+                    Arrays.asList(sRegisters).contains(rt) &&
+                    Arrays.asList(sRegisters).contains(rs)){
+                Type655556 s = new Type655556(sOpCode,
+                        extendBin(hexToBin("" + rs.charAt(1)), 5),
+                        extendBin(hexToBin("" + rt.charAt(1)), 5),
+                        extendBin(hexToBin("" + rd.charAt(1)), 5),
+                        sa, func);
+                sampleOpCode.add(new Opcode(ins + " " + method[2] + ", " + method[1]+ ", " +method[0],
+                        sOpCode, s.getsRs(), s.getsRt(), s.getsRd(), s.getsSa(), s.getsFunc(), binToHex(s.getAll())));
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean checkDADI(String ins, String[] method, String sOpCode, boolean isDaui){
@@ -296,7 +324,8 @@ public class Controller implements Initializable {
                         extendBin(hexToBin("" + rt.charAt(1)), 5),
                         extendBin(hexToBin(immediate), 16));
 
-                if(isDaui && !s.getsRs().equals("00000")){
+                if(isDaui && s.getsRs().equals("00000")){
+                    System.out.println(s.getsRs() + "= r0");
                     return false;
                 }
 
@@ -343,8 +372,6 @@ public class Controller implements Initializable {
 
         return false;
     }
-
-
 
     private String extendBin(String bin, int n){
         while (bin.length() < n)
