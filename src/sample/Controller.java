@@ -10,7 +10,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-
+import javafx.scene.shape.Circle;
+import javafx.stage.Popup;
+import javafx.scene.paint.Color;
 
 import java.math.BigInteger;
 import java.net.URL;
@@ -109,12 +111,12 @@ public class Controller implements Initializable {
     private ArrayList<Register> registerArraylist = new ArrayList<Register>();
     private ObservableList<Object> sampleOpCode = FXCollections.observableArrayList();
     private ArrayList<Opcode> instructionSet = new ArrayList<>();
+    private String NPC = "0100";
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
         //load register
-
-
         for(int i = 0;i < 32; i++){
             Register reg = new Register("R" + i + " ","0000000000000000");
             registerArraylist.add(reg);
@@ -137,22 +139,6 @@ public class Controller implements Initializable {
                     System.out.println(t.getNewValue());
                 }
         );
-        //load opcodes
-
-        tableInstruction.setCellValueFactory(new PropertyValueFactory<Opcode,String>("instruction"));
-        table31.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit31"));
-        table25.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit25"));
-        table20.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit20"));
-        table15.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit15"));
-        table10.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit10"));
-        table5.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit5"));
-        tableHex.setCellValueFactory(new PropertyValueFactory<Opcode,String>("Hex"));
-        opcodeTable.setItems(sampleOpCode);
-        opcodeTable.setStyle("-fx-font-size: 9 calibri");
-
-        CycleNextBtn.setDisable(true);
-        for (int i = 0; i < sRegisters.length; i++)
-            sRegisters[i] = "R"+i;
 
         //load data
         ArrayList<Data> dataArrayList = new ArrayList<Data>();
@@ -166,15 +152,43 @@ public class Controller implements Initializable {
         tblrep.setCellValueFactory(new PropertyValueFactory<Data,String>("Representation"));
         dataTable.setItems(data);
 
-        //display Cycles
-        //showCycle.appendText("IR: " + "\n" + "NPC: " + );
+        dataTable.setEditable(true);
+        tblrep.setCellFactory(TextFieldTableCell.<Data>forTableColumn());
+        tblrep.setOnEditCommit(
+                (TableColumn.CellEditEvent<Data,String> t)->{
+                    if(t.getNewValue().length() == 2)
+                        ((Data) t.getTableView().getItems().get(
+                                t.getTablePosition().getRow())).setRepresentation(t.getNewValue());
+                    else dataTable.refresh();
+                    System.out.println(t.getNewValue());
+                }
+        );
+
+
+        //load opcodes
+        tableInstruction.setCellValueFactory(new PropertyValueFactory<Opcode,String>("instruction"));
+        table31.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit31"));
+        table25.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit25"));
+        table20.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit20"));
+        table15.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit15"));
+        table10.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit10"));
+        table5.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit5"));
+        tableHex.setCellValueFactory(new PropertyValueFactory<Opcode,String>("Hex"));
+        opcodeTable.setItems(sampleOpCode);
+        opcodeTable.setStyle("-fx-font-size: 9 calibri");
+
+
+        for (int i = 0; i < sRegisters.length; i++)
+            sRegisters[i] = "R"+i;
+
+        CycleNextBtn.setDisable(true);
+
+
+
     }
 
     //goto button setonclick
     public void btnGoto(){
-        for (int i = 0; i < registerArraylist.size(); i++) {
-            System.out.println(registerArraylist.get(i).getValue());
-        }
     }
 
     //load button setonclick
@@ -218,6 +232,8 @@ public class Controller implements Initializable {
 
     private void reset(){
         //Add more reset function/method call here
+        showCycle.setText("");
+        NPC = "0100";
         pointer = 0;
         resetRegisters();
         resetOpcode();
@@ -230,8 +246,67 @@ public class Controller implements Initializable {
     //Adds a row in the opcode table depending on the instruction executed
     //next cycle button setonclick
     public void btnNextCycle(){
+       if(!(pointer >= instructionSet.size())) {
+          String alu =  extendBin(aluOutput(getRegisterValue(btod(instructionSet.get(pointer).getBit25())),
+                   getRegisterValue(btod(instructionSet.get(pointer).getBit20())),
+                   extendBin(binToHex(instructionSet.get(pointer).getImmediate()),16) ), 16);
+           Cycle cycle = new Cycle(instructionSet.get(pointer).getHex(),
+                   extendBin(decToHex(hextoDec(NPC) + 4), 16),
+                   getRegisterValue(btod(instructionSet.get(pointer).getBit25())),
+                   getRegisterValue(btod(instructionSet.get(pointer).getBit20())),
+                   extendBin(binToHex(instructionSet.get(pointer).getImmediate()),16),
+                   alu, isBC() ? "1" : "0"
+                   , extendBin(decToHex(hextoDec(NPC) + 4), 16), isLoad() ? alu : "n/a", isStore() ? "n/a" : "n/a",
+                   alu);
+           if(
+                   instructionSet.get(pointer).getInstruction().contains("DADDIU") ||
+                   instructionSet.get(pointer).getInstruction().contains("DAUI")
+           )setRegisterValue(btod(instructionSet.get(pointer).getBit20()), alu);
+           if(instructionSet.get(pointer).getInstruction().contains("DADDU") ||
+                   instructionSet.get(pointer).getInstruction().contains("DSUBU"))
+               setRegisterValue(btod(instructionSet.get(pointer).getBit15()), alu);
+
+           showCycle.appendText("IR: " + cycle.getIR() + "\n" +
+                   "NPC: " + cycle.getNPC() + "\n" +
+                   "A: " + cycle.getA() + "\n" +
+                   "B: " + cycle.getB() + "\n" +
+                   "IMM: " + cycle.getIMM() + "\n" +
+                   "ALUOUTPUT: " + cycle.getALUOUTPUT() + "\n" +
+                   "COND: " + cycle.getCOND() + "\n" +
+                   "PC: " + cycle.getPC() + "\n" +
+                   "LMD: " + cycle.getLMD() + "\n" +
+                   "Range: " + cycle.getRANGE() + "\n" +
+                   "Rn: " + cycle.getRN() + "\n" + "\n"
+           );
+           pointer++;
+           NPC = extendBin(decToHex(hextoDec(NPC) + 4), 4);
+       }else {CycleNextBtn.setDisable(true);}
     }
 
+    private boolean isBC(){
+        return instructionSet.get(pointer).getInstruction().contains("BC");
+    }
+    private boolean isStore(){
+        return instructionSet.get(pointer).getInstruction().contains("SD");
+    }
+
+    private boolean isLoad(){
+        return instructionSet.get(pointer).getInstruction().contains("LD");
+    }
+
+    private String aluOutput(String a, String b, String op){
+        if(instructionSet.get(pointer).getInstruction().contains("DADDIU")){
+            return decToHex(hextoDec(a) + hextoDec(op));
+        }else if(instructionSet.get(pointer).getInstruction().contains("DADDU")) {
+            return decToHex(hextoDec(a) + hextoDec(b));
+        }else if(instructionSet.get(pointer).getInstruction().contains("DAUI"))
+            return decToHex(hextoDec(a) + hextoDec(b));
+        else if(instructionSet.get(pointer).getInstruction().contains("DSUBU"))
+            return decToHex(hextoDec(a) - hextoDec(b));
+        else if(instructionSet.get(pointer).getInstruction().contains("LD") || instructionSet.get(pointer).getInstruction().contains("SD"))
+            return decToHex(hextoDec(a) + hextoDec(op));
+        else return "0";
+    }
 
     /*** PLACE ALL LOGICAL METHODS/FUNCTIONS HERE ***/
 
@@ -484,12 +559,19 @@ public class Controller implements Initializable {
         else return false;
     }
 
-    private String hextoDec(int hex){
-        return Integer.toString(hex, 10);
+    private int hextoDec(String hex){
+        return Integer.parseInt(hex, 16);
     }
 
     private String decToHex(int dec){
         return Integer.toString(dec,16);
+    }
+
+    private String getRegisterValue(int n){
+        return tblregister.getTableView().getItems().get(n).getValue();
+    }
+    private void setRegisterValue(int n, String s){
+        tblregister.getTableView().getItems().get(n).setValue(s);
     }
 
     private String binToHex(String binary){
@@ -530,7 +612,10 @@ public class Controller implements Initializable {
     private String hexToBin(String hex){
         return new BigInteger(hex, 16).toString(2);
     }
-
+    
+    private int btod(String bin){
+        return Integer.parseInt(bin,2);
+    }
     private String[] splitOffset(String offset){
         String[] strings = new String[4];
 //        strings[0] = offset.substring(0, 1);

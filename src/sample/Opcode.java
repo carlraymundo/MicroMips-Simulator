@@ -84,4 +84,8 @@ public class Opcode {
     public void setHex(String hex) {
         Hex = hex;
     }
+
+    public String getImmediate(){
+        return bit15 + bit10 + bit5;
+    }
 }
