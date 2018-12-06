@@ -105,16 +105,13 @@ public class Controller implements Initializable {
             "DAUI"));
     private int pointer = 0;
     private String[] sRegisters = new String[32];
-    
-
-
-    public ObservableList<Object> sampleOpCode = FXCollections.observableArrayList();
-
+    private ArrayList<Register> registerArraylist = new ArrayList<Register>();
+    private ObservableList<Object> sampleOpCode = FXCollections.observableArrayList();
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //load register
 
-        ArrayList<Register> registerArraylist = new ArrayList<Register>();
+
         for(int i = 0;i < 32; i++){
             Register reg = new Register("R" + i + " ","0000000000000000");
             registerArraylist.add(reg);
@@ -130,13 +127,19 @@ public class Controller implements Initializable {
         tblvalue.setCellFactory(TextFieldTableCell.<Register>forTableColumn());
         tblvalue.setOnEditCommit(
                 (TableColumn.CellEditEvent<Register,String> t)->{
+                    if(t.getTablePosition().getRow() != 0 && t.getNewValue().length() == 16 && isValidHex(t.getNewValue()))
                     ((Register) t.getTableView().getItems().get(
                             t.getTablePosition().getRow())).setValue(t.getNewValue());
+                    else registerTable.refresh();
                 }
         );
 
 
+
+
+
         //load opcodes
+
         tableInstruction.setCellValueFactory(new PropertyValueFactory<Opcode,String>("instruction"));
         table31.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit31"));
         table25.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit25"));
@@ -152,8 +155,6 @@ public class Controller implements Initializable {
         for (int i = 0; i < sRegisters.length; i++)
             sRegisters[i] = "R"+i;
 
-//        showCycle.append("IR: " + )
-
         //load data
         ArrayList<Data> dataArrayList = new ArrayList<Data>();
         for (int i = 0; i < 256; i++) {
@@ -166,11 +167,15 @@ public class Controller implements Initializable {
         tblrep.setCellValueFactory(new PropertyValueFactory<Data,String>("Representation"));
         dataTable.setItems(data);
 
+        //display Cycles
+        //showCycle.appendText("IR: " + "\n" + "NPC: " + );
     }
 
     //goto button setonclick
     public void btnGoto(){
-
+        for (int i = 0; i < registerArraylist.size(); i++) {
+            System.out.println(registerArraylist.get(i).getValue());
+        }
     }
 
     //load button setonclick
