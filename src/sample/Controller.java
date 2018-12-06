@@ -110,7 +110,7 @@ public class Controller implements Initializable {
     private String[] sRegisters = new String[32];
     private ArrayList<Register> registerArraylist = new ArrayList<Register>();
     private ObservableList<Object> sampleOpCode = FXCollections.observableArrayList();
-
+    private ArrayList<Opcode> instructionSet = new ArrayList<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -197,7 +197,7 @@ public class Controller implements Initializable {
         getInstructions();
         //insert the function/method call for error checking here
         for (int i = 0; i < arrSInstructions.length; i++) {
-            if(!isLineValid(arrSInstructions[i])) {
+            if(!isLineValid(arrSInstructions[i], i, arrSInstructions.length)) {
                 CycleNextBtn.setDisable(true);
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Error at line " + (i + 1), ButtonType.OK);
                 alert.showAndWait();
@@ -279,7 +279,7 @@ public class Controller implements Initializable {
         opcodeTable.getItems().clear();
     }
 
-    private boolean isInstructionValid(String sInstruction, String line){
+    private boolean isInstructionValid(String sInstruction, String line, int no, int max){
         String method = line.substring(sInstruction.length() + 1).trim();
         String[] csv = method.split(",");
         if(sInstruction.equals("LD") && checkLDSD(sInstruction, csv,"110111")){
@@ -297,16 +297,20 @@ public class Controller implements Initializable {
         else if(sInstruction.equals("DSUBU") && checkDADU(sInstruction, csv, "000000", "00000", "101111")) {
             return true;
         }
-        else if(sInstruction.equals("BC"))
-            System.out.println("BC");
-        else if(sInstruction.equals("BLTC"))
-            System.out.println("BLTC");
+        else if(sInstruction.equals("BC")) {
+            String count = checkBC(sInstruction, method, "110010", line, no, max);
+            if(count != null) {
+//                if()
+                return true;
+            }else return false;
+        }
+        else if(sInstruction.equals("BLTC")) {
+           return true;
+        }
         else if(sInstruction.equals("DAUI") && checkDADI(sInstruction, csv, "011101", true)){
             return true;
         }
         else return false;
-        System.out.println(method);
-        return true;
     }
 
 
@@ -323,8 +327,10 @@ public class Controller implements Initializable {
                         extendBin(hexToBin("" + rt.charAt(1)), 5),
                         extendBin(hexToBin("" + rd.charAt(1)), 5),
                         sa, func);
-                sampleOpCode.add(new Opcode(ins + " " + method[0] + ", " + method[1]+ ", " +method[2],
-                        sOpCode, s.getsRs(), s.getsRt(), s.getsRd(), s.getsSa(), s.getsFunc(), binToHex(s.getAll())));
+                Opcode opcode = new Opcode(ins + " " + method[0] + ", " + method[1]+ ", " +method[2],
+                        sOpCode, s.getsRs(), s.getsRt(), s.getsRd(), s.getsSa(), s.getsFunc(), binToHex(s.getAll()));
+                sampleOpCode.add(opcode);
+                instructionSet.add(opcode);
                 return true;
             }
         }
@@ -332,8 +338,38 @@ public class Controller implements Initializable {
         return false;
     }
 
-//    private boolean checkBC(String ins, String[] method, String sOpCode, ){
+    private String checkBC(String ins, String method, String sOpCode, String whole, int curr, int max){
+        int count = 0;
+        boolean found = false;
+        if(!method.contains(" ")){
+            for (int i = curr + 1; i < max; i++) {
+                if(arrSInstructions[i].contains(method)){
+                    found = !found;
+                    break;
+                }
+                count++;
+            }
+
+            if(!found){
+                count = 0;
+                for (int i = curr+1; i >= 0; i--) {
+                    if(arrSInstructions[i].contains(method)){
+                        found = !found;
+                        break;
+                    }
+                    count--;
+                }
+            }
+        }
+        if(!found)
+            return null;
+        else return Integer.toString(count);
+    }
+
+//    private int findCurrentLoc(String whole){
+//        for (int i = 0; i < arrSInstructions; i++) {
 //
+//        }
 //    }
 
 //    private boolean countoffSet(String ins, String[] method, String sOpCode,)
@@ -352,19 +388,20 @@ public class Controller implements Initializable {
                         extendBin(hexToBin(immediate), 16));
 
                 if(isDaui && s.getsRs().equals("00000")){
-                    System.out.println(s.getsRs() + "= r0");
                     return false;
                 }
 
                 String[] splitOffset = splitOffset(extendBin(hexToBin(immediate), 16));
-                sampleOpCode.add(new Opcode(ins+ " " + method[0] + ", " + method[1] + ", " + method[2],
+                Opcode opcode = new Opcode(ins+ " " + method[0] + ", " + method[1] + ", " + method[2],
                         s.getsOpCode(),
                         s.getsRs(),
                         s.getsRt(),
                         splitOffset[0],
                         splitOffset[1],
                         splitOffset[2],
-                        binToHex(s.getAll())));
+                        binToHex(s.getAll()));
+                sampleOpCode.add(opcode);
+                instructionSet.add(opcode);
                 return true;
             }
         }
@@ -384,14 +421,16 @@ public class Controller implements Initializable {
                     Type655_16 s =  new Type655_16(sOpCode, extendBin(hexToBin(""+base.charAt(1)), 5),
                             extendBin(hexToBin(""+method[0].charAt(1)), 5), extendBin(hexToBin(offset), 16));
                     String[] splitOffset = splitOffset(s.getsVariable());
-                    sampleOpCode.add(new Opcode(ins + " " + method[0]+", "+ offset+"(" + base +")",
+                    Opcode opcode = new Opcode(ins + " " + method[0]+", "+ offset+"(" + base +")",
                             s.getsOpCode(),
                             s.getsRs(),
                             s.getsRt(),
                             splitOffset[0],
                             splitOffset[1],
                             splitOffset[2],
-                            binToHex(s.getAll())));
+                            binToHex(s.getAll()));
+                    sampleOpCode.add(opcode);
+                    instructionSet.add(opcode);
                     return true;
                 }
             }
@@ -416,7 +455,7 @@ public class Controller implements Initializable {
         return true;
     }
 
-    private boolean isLineValid(String line){
+    private boolean isLineValid(String line, int no, int max){
         StringBuilder s = new StringBuilder();
         line = line.trim();
         for (int i = 0; i < line.length(); i++) {
@@ -430,6 +469,37 @@ public class Controller implements Initializable {
                 } catch (IndexOutOfBoundsException e) {
                     return false;
                 }
+            }else if(line.charAt(i) == ':'){
+                try {
+                    if (line.charAt(i + 1) != ' ')
+                        return false;
+                    else{
+                        StringBuilder b = new StringBuilder();
+                        line = line.substring(i + 1).trim();
+                        for (int j = i + 1; j < line.length(); j++) {
+                            b.append(line.charAt(j));
+                            if(arrInstructionList.contains(b.toString())) {
+                                try {
+                                    if (line.charAt(i + 1) != ' ')
+                                        return false;
+                                    else {
+                                        s = b;
+                                        break;
+                                    }
+                                } catch (IndexOutOfBoundsException e) {
+                                    return false;
+                                }
+                            }
+                            else if(line.charAt(i) == ' ' || i + 1 >= line.length()){
+                                System.out.println(s.toString());
+                                return false;
+                            }
+                        }
+                        break;
+                    }
+                }catch (IndexOutOfBoundsException e){
+                    return false;
+                }
             }
             else if(line.charAt(i) == ' ' || i + 1 >= line.length()){
                 System.out.println(s.toString());
@@ -437,9 +507,13 @@ public class Controller implements Initializable {
             }
         }
         System.out.println(s.toString());
-        if(isInstructionValid(s.toString(), line))
+        if(isInstructionValid(s.toString(), line, no, max))
             return true;
         else return false;
+    }
+
+    private String hextoDec(int hex){
+        return Integer.toString(hex, 10);
     }
 
     private String decToHex(int dec){
@@ -484,6 +558,8 @@ public class Controller implements Initializable {
     private String hexToBin(String hex){
         return new BigInteger(hex, 16).toString(2);
     }
+
+
 
     private String[] splitOffset(String offset){
         String[] strings = new String[4];
