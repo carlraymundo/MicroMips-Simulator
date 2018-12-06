@@ -138,6 +138,8 @@ public class Controller implements Initializable {
         );
 
 
+
+
         //load opcodes
         tableInstruction.setCellValueFactory(new PropertyValueFactory<Opcode,String>("instruction"));
         table31.setCellValueFactory(new PropertyValueFactory<Opcode,String>("bit31"));
@@ -197,18 +199,14 @@ public class Controller implements Initializable {
 //        }
 
         //insert the function/method call for executing the code
-
 //        for (int i = 0; i < arrInstructionList.size(); i++) {
 //            System.out.println(arrInstructionList.get(i));
 //        }
-
 
         //Ignore this for loop, delete this code before submission
 //        for (int i = 0; i < arrSInstructions.length; i++)
 //            System.out.println(arrSInstructions[i]);
         CycleNextBtn.setDisable(false);
-
-
     }
 
 
@@ -282,10 +280,9 @@ public class Controller implements Initializable {
         return true;
     }
 
+
     private boolean checkDADU(String ins, String[] method, String sOpCode, String sa, String func){
         if(method.length == 3){
-            System.out.println("Accessed Dadu");
-
             String rd = method[0].trim();
             String rt = method[2].trim();
             String rs = method[1].trim();
@@ -297,7 +294,7 @@ public class Controller implements Initializable {
                         extendBin(hexToBin("" + rt.charAt(1)), 5),
                         extendBin(hexToBin("" + rd.charAt(1)), 5),
                         sa, func);
-                sampleOpCode.add(new Opcode(ins + " " + method[2] + ", " + method[1]+ ", " +method[0],
+                sampleOpCode.add(new Opcode(ins + " " + method[0] + ", " + method[1]+ ", " +method[2],
                         sOpCode, s.getsRs(), s.getsRt(), s.getsRd(), s.getsSa(), s.getsFunc(), binToHex(s.getAll())));
                 return true;
             }
@@ -305,6 +302,12 @@ public class Controller implements Initializable {
 
         return false;
     }
+
+//    private boolean checkBC(String ins, String[] method, String sOpCode, ){
+//
+//    }
+
+//    private boolean countoffSet(String ins, String[] method, String sOpCode,)
 
     private boolean checkDADI(String ins, String[] method, String sOpCode, boolean isDaui){
         if(method.length == 3){
