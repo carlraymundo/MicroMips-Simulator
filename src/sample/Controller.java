@@ -267,8 +267,9 @@ public class Controller implements Initializable {
         else if(sInstruction.equals("DADDU") && checkDADU(sInstruction, csv, "000000", "00000", "101101")){
             return true;
         }
-        else if(sInstruction.equals("DSUBU") && checkDADU(sInstruction, csv, "000000", "00000", "101111"))
-            System.out.println("DSUBU");
+        else if(sInstruction.equals("DSUBU") && checkDADU(sInstruction, csv, "000000", "00000", "101111")) {
+            return true;
+        }
         else if(sInstruction.equals("BC"))
             System.out.println("BC");
         else if(sInstruction.equals("BLTC"))
@@ -283,7 +284,9 @@ public class Controller implements Initializable {
 
     private boolean checkDADU(String ins, String[] method, String sOpCode, String sa, String func){
         if(method.length == 3){
-            String rd = method[2].trim().substring(1);
+            System.out.println("Accessed Dadu");
+
+            String rd = method[2].trim();
             String rt = method[0].trim();
             String rs = method[1].trim();
             if(Arrays.asList(sRegisters).contains(rd) &&
@@ -295,7 +298,8 @@ public class Controller implements Initializable {
                         extendBin(hexToBin("" + rd.charAt(1)), 5),
                         sa, func);
                 sampleOpCode.add(new Opcode(ins + " " + method[2] + ", " + method[1]+ ", " +method[0],
-                        sOpCode, s.getsRs(), s.getsRt(), s.getsRd(), s.getsSa(), s.getsFunc(), s.getAll()));
+                        sOpCode, s.getsRs(), s.getsRt(), s.getsRd(), s.getsSa(), s.getsFunc(), binToHex(s.getAll())));
+                return true;
             }
         }
 
