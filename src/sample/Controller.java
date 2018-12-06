@@ -272,6 +272,7 @@ public class Controller implements Initializable {
             String count = checkBC(sInstruction, method, "110010", line, no, max);
             if(count != null) {
 //                if()
+
                 return true;
             }else return false;
         }
@@ -529,8 +530,6 @@ public class Controller implements Initializable {
     private String hexToBin(String hex){
         return new BigInteger(hex, 16).toString(2);
     }
-
-
 
     private String[] splitOffset(String offset){
         String[] strings = new String[4];
