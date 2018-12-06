@@ -286,8 +286,8 @@ public class Controller implements Initializable {
         if(method.length == 3){
             System.out.println("Accessed Dadu");
 
-            String rd = method[2].trim();
-            String rt = method[0].trim();
+            String rd = method[0].trim();
+            String rt = method[2].trim();
             String rs = method[1].trim();
             if(Arrays.asList(sRegisters).contains(rd) &&
                     Arrays.asList(sRegisters).contains(rt) &&
