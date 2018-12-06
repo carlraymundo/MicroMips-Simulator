@@ -111,6 +111,7 @@ public class Controller implements Initializable {
     private ArrayList<Register> registerArraylist = new ArrayList<Register>();
     private ObservableList<Object> sampleOpCode = FXCollections.observableArrayList();
     private ArrayList<Opcode> instructionSet = new ArrayList<>();
+    private String NPC = "0100";
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -188,7 +189,6 @@ public class Controller implements Initializable {
 
     //goto button setonclick
     public void btnGoto(){
-
     }
 
     //load button setonclick
@@ -232,6 +232,8 @@ public class Controller implements Initializable {
 
     private void reset(){
         //Add more reset function/method call here
+        showCycle.setText("");
+        NPC = "0100";
         pointer = 0;
         resetRegisters();
         resetOpcode();
@@ -244,23 +246,67 @@ public class Controller implements Initializable {
     //Adds a row in the opcode table depending on the instruction executed
     //next cycle button setonclick
     public void btnNextCycle(){
-        showCycle.setText("");
-        Cycle cycle = new Cycle("ABCDEFGH","0000000000000004","0000000000000000", "0000000000000000",
-                "0000000000000000","0000000000000000" , "0", "0000000000000004","n/a","0","0000000000000000");
-        showCycle.appendText("IR: " + cycle.getIR()+ "\n" +
-                "NPC: " + cycle.getNPC()+ "\n" +
-                "A: " + cycle.getA() + "\n" +
-                "B: " + cycle.getB()+ "\n" +
-                "IMM: " + cycle.getIMM()+ "\n" +
-                "ALUOUTPUT: " + cycle.getALUOUTPUT()+ "\n" +
-                "COND: " + cycle.getCOND()+ "\n" +
-                "PC: " + cycle.getPC()+ "\n" +
-                "LMD: " + cycle.getLMD()+ "\n" +
-                "Range: " + cycle.getRANGE()+ "\n" +
-                "Rn: " + cycle.getRN() + "\n" + "\n"
-        );
+       if(!(pointer >= instructionSet.size())) {
+          String alu =  extendBin(aluOutput(getRegisterValue(btod(instructionSet.get(pointer).getBit25())),
+                   getRegisterValue(btod(instructionSet.get(pointer).getBit20())),
+                   extendBin(binToHex(instructionSet.get(pointer).getImmediate()),16) ), 16);
+           Cycle cycle = new Cycle(instructionSet.get(pointer).getHex(),
+                   extendBin(decToHex(hextoDec(NPC) + 4), 16),
+                   getRegisterValue(btod(instructionSet.get(pointer).getBit25())),
+                   getRegisterValue(btod(instructionSet.get(pointer).getBit20())),
+                   extendBin(binToHex(instructionSet.get(pointer).getImmediate()),16),
+                   alu, isBC() ? "1" : "0"
+                   , extendBin(decToHex(hextoDec(NPC) + 4), 16), isLoad() ? alu : "n/a", isStore() ? "n/a" : "n/a",
+                   alu);
+           if(
+                   instructionSet.get(pointer).getInstruction().contains("DADDIU") ||
+                   instructionSet.get(pointer).getInstruction().contains("DAUI")
+           )setRegisterValue(btod(instructionSet.get(pointer).getBit20()), alu);
+           if(instructionSet.get(pointer).getInstruction().contains("DADDU") ||
+                   instructionSet.get(pointer).getInstruction().contains("DSUBU"))
+               setRegisterValue(btod(instructionSet.get(pointer).getBit15()), alu);
+
+           showCycle.appendText("IR: " + cycle.getIR() + "\n" +
+                   "NPC: " + cycle.getNPC() + "\n" +
+                   "A: " + cycle.getA() + "\n" +
+                   "B: " + cycle.getB() + "\n" +
+                   "IMM: " + cycle.getIMM() + "\n" +
+                   "ALUOUTPUT: " + cycle.getALUOUTPUT() + "\n" +
+                   "COND: " + cycle.getCOND() + "\n" +
+                   "PC: " + cycle.getPC() + "\n" +
+                   "LMD: " + cycle.getLMD() + "\n" +
+                   "Range: " + cycle.getRANGE() + "\n" +
+                   "Rn: " + cycle.getRN() + "\n" + "\n"
+           );
+           pointer++;
+           NPC = extendBin(decToHex(hextoDec(NPC) + 4), 4);
+       }else {CycleNextBtn.setDisable(true);}
     }
 
+    private boolean isBC(){
+        return instructionSet.get(pointer).getInstruction().contains("BC");
+    }
+    private boolean isStore(){
+        return instructionSet.get(pointer).getInstruction().contains("SD");
+    }
+
+    private boolean isLoad(){
+        return instructionSet.get(pointer).getInstruction().contains("LD");
+    }
+
+    private String aluOutput(String a, String b, String op){
+        if(instructionSet.get(pointer).getInstruction().contains("DADDIU")){
+            return decToHex(hextoDec(a) + hextoDec(op));
+        }else if(instructionSet.get(pointer).getInstruction().contains("DADDU")) {
+            return decToHex(hextoDec(a) + hextoDec(b));
+        }else if(instructionSet.get(pointer).getInstruction().contains("DAUI"))
+            return decToHex(hextoDec(a) + hextoDec(b));
+        else if(instructionSet.get(pointer).getInstruction().contains("DSUBU"))
+            return decToHex(hextoDec(a) - hextoDec(b));
+        else if(instructionSet.get(pointer).getInstruction().contains("LD") || instructionSet.get(pointer).getInstruction().contains("SD"))
+            return decToHex(hextoDec(a) + hextoDec(op));
+        else return "0";
+    }
 
     /*** PLACE ALL LOGICAL METHODS/FUNCTIONS HERE ***/
 
@@ -512,12 +558,19 @@ public class Controller implements Initializable {
         else return false;
     }
 
-    private String hextoDec(int hex){
-        return Integer.toString(hex, 10);
+    private int hextoDec(String hex){
+        return Integer.parseInt(hex, 16);
     }
 
     private String decToHex(int dec){
         return Integer.toString(dec,16);
+    }
+
+    private String getRegisterValue(int n){
+        return tblregister.getTableView().getItems().get(n).getValue();
+    }
+    private void setRegisterValue(int n, String s){
+        tblregister.getTableView().getItems().get(n).setValue(s);
     }
 
     private String binToHex(String binary){
@@ -559,7 +612,9 @@ public class Controller implements Initializable {
         return new BigInteger(hex, 16).toString(2);
     }
 
-
+    private int btod(String bin){
+        return Integer.parseInt(bin,2);
+    }
 
     private String[] splitOffset(String offset){
         String[] strings = new String[4];
