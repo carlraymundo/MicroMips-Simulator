@@ -49,4 +49,7 @@ public class Type655556 extends Instruction{
     public String getsFunc() {
         return sFunc;
     }
+    public String getAll(){
+        return sOpCode + sRs + sRt + sRd + sSa + sFunc;
+    }
 }
