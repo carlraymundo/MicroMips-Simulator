@@ -21,12 +21,12 @@ import java.util.ResourceBundle;
 /** Checklist of implemented instructions
  *  [/] LD - OpCode
  *  [/] SD - OpCode
- *  [ ] DADDIU
+ *  [/] DADDIU - OpCode
  *  [ ] DADDU
  *  [ ] DSUBU
  *  [ ] BC
  *  [ ] BLTC
- *  [ ] DAUI
+ *  [/] DAUI - OpCode
  */
 
 public class Controller implements Initializable {
@@ -108,14 +108,7 @@ public class Controller implements Initializable {
     
 
 
-    public ObservableList<Object> sampleOpCode = FXCollections.observableArrayList(
-
-        new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF"),
-        new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF"),
-        new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF"),
-        new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF"),
-        new Opcode("DADDIU R1, R2, #0002","000000","00000","00000","00000","00000","00000","ABCDEGSF")
-    );
+    public ObservableList<Object> sampleOpCode = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -187,6 +180,7 @@ public class Controller implements Initializable {
         //insert the function/method call for error checking here
         for (int i = 0; i < arrSInstructions.length; i++) {
             if(!isLineValid(arrSInstructions[i])) {
+                CycleNextBtn.setDisable(true);
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Error at line " + (i + 1), ButtonType.OK);
                 alert.showAndWait();
                 if (alert.getResult() == ButtonType.OK) {
@@ -265,8 +259,9 @@ public class Controller implements Initializable {
         else if(sInstruction.equals("SD") && checkLDSD(sInstruction, csv, "111111")) {
             return true;
         }
-        else if(sInstruction.equals("DADDIU"))
-            System.out.println("DADDIU");
+        else if(sInstruction.equals("DADDIU") && checkDADI(sInstruction, csv, "011001", false)) {
+            return true;
+        }
         else if(sInstruction.equals("DADDU"))
             System.out.println("DADDU");
         else if(sInstruction.equals("DSUBU"))
@@ -275,13 +270,45 @@ public class Controller implements Initializable {
             System.out.println("BC");
         else if(sInstruction.equals("BLTC"))
             System.out.println("BLTC");
-        else if(sInstruction.equals("DAUI"))
-            System.out.println("DAUI");
+        else if(sInstruction.equals("DAUI") && checkDADI(sInstruction, csv, "011101", true)){
+            return true;
+        }
         else return false;
         System.out.println(method);
         return true;
     }
 
+    private boolean checkDADI(String ins, String[] method, String sOpCode, boolean isDaui){
+        if(method.length == 3){
+            String immediate = method[2].trim().substring(1);
+            String rt = method[0].trim();
+            String rs = method[1].trim();
+            System.out.println(immediate + " " + " " + rt + " " + rs);
+            if(method[2].trim().length() == 5 && method[2].trim().charAt(0) == '#' && Arrays.asList(sRegisters).contains(rt) &&
+                    Arrays.asList(sRegisters).contains(rs) && isValidHex(immediate)) {
+                Type655_16 s = new Type655_16(sOpCode,
+                        extendBin(hexToBin("" + rs.charAt(1)), 5),
+                        extendBin(hexToBin("" + rt.charAt(1)), 5),
+                        extendBin(hexToBin(immediate), 16));
+
+                if(isDaui && !s.getsRs().equals("00000")){
+                    return false;
+                }
+
+                String[] splitOffset = splitOffset(extendBin(hexToBin(immediate), 16));
+                sampleOpCode.add(new Opcode(ins+ " " + method[0] + ", " + method[1] + ", " + method[2],
+                        s.getsOpCode(),
+                        s.getsRs(),
+                        s.getsRt(),
+                        splitOffset[0],
+                        splitOffset[1],
+                        splitOffset[2],
+                        binToHex(s.getAll())));
+                return true;
+            }
+        }
+        return false;
+    }
 
     private boolean checkLDSD(String ins, String[] method, String sOpCode){
         if (method.length == 2){
@@ -293,7 +320,8 @@ public class Controller implements Initializable {
                 offset = method[1].toUpperCase().substring(0, 4);
                 base = method[1].substring(5, 7);
                 if(isValidHex(offset) && Arrays.asList(sRegisters).contains(base)){
-                    Type655_16 s =  new Type655_16(sOpCode, extendBin(hexToBin(""+base.charAt(1)), 5), extendBin(hexToBin(""+method[0].charAt(1)), 5), extendBin(hexToBin(offset), 16));
+                    Type655_16 s =  new Type655_16(sOpCode, extendBin(hexToBin(""+base.charAt(1)), 5),
+                            extendBin(hexToBin(""+method[0].charAt(1)), 5), extendBin(hexToBin(offset), 16));
                     String[] splitOffset = splitOffset(s.getsVariable());
                     sampleOpCode.add(new Opcode(ins + " " + method[0]+", "+ offset+"(" + base +")",
                             s.getsOpCode(),
@@ -321,6 +349,7 @@ public class Controller implements Initializable {
 
     private boolean isValidHex(String hex){
         hex = hex.toUpperCase();
+        System.out.println("HExed");
         for (int i = 0; i < hex.length(); i++) {
             if(!(hex.charAt(i) >= '0' && hex.charAt(i) < '9' || hex.charAt(i) >= 'A' && hex.charAt(i) <= 'F'))
                 return false;
@@ -349,8 +378,9 @@ public class Controller implements Initializable {
             }
         }
         System.out.println(s.toString());
-        isInstructionValid(s.toString(), line);
-        return true;
+        if(isInstructionValid(s.toString(), line))
+            return true;
+        else return false;
     }
 
     private String decToHex(int dec){
@@ -405,4 +435,3 @@ public class Controller implements Initializable {
         return strings;
     }
 }
-
