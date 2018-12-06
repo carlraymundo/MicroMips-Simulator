@@ -71,7 +71,7 @@ public class Controller implements Initializable {
     private TableColumn<Register, String> tblvalue;
 
     @FXML
-    private TableView<?> dataTable;
+    private TableView<Object> dataTable;
 
     @FXML
     private Button GotoBtn;
@@ -87,6 +87,12 @@ public class Controller implements Initializable {
 
     @FXML
     private TextArea showCycle;
+
+    @FXML
+    private TableColumn<Data, String> tbldata;
+
+    @FXML
+    private TableColumn<Data, String> tblrep;
 
     private String[] arrSInstructions;
     private ArrayList<String> arrInstructionList = new ArrayList<>(Arrays.asList("LD",
@@ -153,13 +159,20 @@ public class Controller implements Initializable {
         for (int i = 0; i < sRegisters.length; i++)
             sRegisters[i] = "R"+i;
 
-        String text = "";
-        for (int i=1;i<=5;i++) {
-            text = text + "    Field "+i+"\n";
-        }
-        showCycle.setText(text);
+//        showCycle.append("IR: " + )
 
-        showCycle.appendText("HEllo");
+        //load data
+        ArrayList<Data> dataArrayList = new ArrayList<Data>();
+        for (int i = 0; i < 256; i++) {
+            dataArrayList.add(new Data(extendBin(decToHex(i), 4).toUpperCase(), "00"));
+        }
+
+        ObservableList<Object> data = FXCollections.observableArrayList(dataArrayList);
+
+        tbldata.setCellValueFactory(new PropertyValueFactory<Data,String>("Address"));
+        tblrep.setCellValueFactory(new PropertyValueFactory<Data,String>("Representation"));
+        dataTable.setItems(data);
+
     }
 
     //goto button setonclick

@@ -36,8 +36,8 @@
         </TableView>
         <TableView fx:id="dataTable" layoutX="342.0" layoutY="356.0" prefHeight="238.0" prefWidth="222.0">
             <columns>
-                <TableColumn prefWidth="101.06658935546875" text="Address" />
-                <TableColumn prefWidth="112.800048828125" text="Representation" />
+                <TableColumn fx:id="tbldata" prefWidth="101.06658935546875" text="Address" />
+                <TableColumn fx:id="tblrep" prefWidth="119.199951171875" text="Representation" />
             </columns>
         </TableView>
         <Text layoutX="353.0" layoutY="53.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Registers:">
